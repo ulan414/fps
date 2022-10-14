@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour
     Vector3 lastPos;
     public GameObject decal;
     public MeshRenderer PLS;
+
     /*public bool destroy = false;*/
     // Start is called before the first frame update
     void Start()

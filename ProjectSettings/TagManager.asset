@@ -4,19 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Wall
-  - Metal
-  - Blood
-  - Dirt
-  - Concrete
-  - ExplosiveBarrel
-  - Target
-  - GasTank
-  - Metal (Static)
-  - Wood (Static)
-  - Dirt (Static)
-  - Wood
+  - Shootable
   - AI
+  - ExplosiveBarrel
+  - metal
+  - sand
   layers:
   - Default
   - TransparentFX
@@ -24,16 +16,16 @@ TagManager:
   - 
   - Water
   - UI
+  - metal
+  - 
+  - Lighting
+  - Ground
+  - Postprocessing
   - 
   - 
-  - Wall
-  - First Person View
-  - Character
-  - Post Processing
-  - Post Processing Weapon
-  - Post Processing Scope
-  - Invisible Wall
-  - Projectile
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -51,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Fire
+    uniqueID: 3804908061
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

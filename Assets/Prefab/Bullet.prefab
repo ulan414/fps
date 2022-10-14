@@ -99,3 +99,5 @@ MonoBehaviour:
   Speed: 100
   decal: {fileID: 221696509667951856, guid: d0272e82cec3fa943822f37987fdfe95, type: 3}
   PLS: {fileID: 3258676930818372591}
+  metalHitEffect: {fileID: 1892351807075712, guid: 44be68b4fc4366142a9cd1ae1f761ea4,
+    type: 3}

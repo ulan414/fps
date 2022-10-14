@@ -14,8 +14,8 @@ public sealed class AI : AIBehavior
 	public MeshRenderer PLS;
 	public float dist;
 	NavMeshAgent nav;
-	public float radius = 15;
-	public float fireRadius = 10;
+	public float radius = 35;
+	public float fireRadius = 25;
 	// Start is called before the first frame update
 	void Start()
     {
@@ -47,12 +47,12 @@ public sealed class AI : AIBehavior
 			nav.enabled = false;
 			transform.LookAt(Player.transform.position);
 			transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-			gameObject.GetComponent<Animator>().SetBool("idle", false);
-			gameObject.GetComponent<Animator>().SetBool("Fire", true);
+/*			gameObject.GetComponent<Animator>().SetBool("idle", false);
+			gameObject.GetComponent<Animator>().SetBool("Fire", true);*/
 			elapsed += Time.deltaTime;
-			if (elapsed >= 0.2f)
+			if (elapsed >= 0.17f)
 			{
-				elapsed = elapsed % 0.2f;
+				elapsed = elapsed % 0.17f;
 				Shoot.shot();
 			}
 		}

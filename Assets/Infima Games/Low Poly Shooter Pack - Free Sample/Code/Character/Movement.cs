@@ -199,7 +199,7 @@ namespace InfimaGames.LowPolyShooterPack
         {
             if (Input.GetKeyDown(KeyCode.Space) && grounded)
             {
-                rigidBody.AddForce(new Vector3(0, 1500f, 0), ForceMode.Impulse);
+                rigidBody.AddForce(new Vector3(0, 350f, 0), ForceMode.Impulse);
                 grounded = false;
             }
         }
