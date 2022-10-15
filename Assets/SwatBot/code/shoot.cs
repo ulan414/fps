@@ -98,14 +98,14 @@ public class shoot : MonoBehaviour
                     if (Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading") &&
                         Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
                     {
-                    Debug.Log("1");
+                   
                     Bot.GetComponent<Animator>().SetBool("reload", false);
                         if (ammunitionCurrent + ammunitionTotal >= Ammo)
                         {
                             ammunitionTotal = ammunitionTotal - (Ammo - ammunitionCurrent);
                             //Update the value by a certain amount.
                             ammunitionCurrent = Ammo;
-                        Debug.Log("2");
+                        
                     }
                         else
                         {
@@ -114,7 +114,7 @@ public class shoot : MonoBehaviour
                         }
                         if (ammunitionCurrent > 1)
                         {
-                        Debug.Log("reloaded");
+                
                             shot();
                         }
                        
@@ -139,7 +139,7 @@ public class shoot : MonoBehaviour
 
                 if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue, Mask) || true)
                 {
-                    Debug.Log("fire");
+                    
                     Bot.GetComponent<Animator>().SetBool("Fire", true);
                     PLS.enabled = true;
                     shootingSystem.Play();
