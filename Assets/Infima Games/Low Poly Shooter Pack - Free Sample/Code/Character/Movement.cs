@@ -25,14 +25,33 @@ namespace InfimaGames.LowPolyShooterPack
         [SerializeField]
         private float speedWalking = 5.0f;
 
+        [SerializeField]
+        private float jumpForce;
+
         [Tooltip("How fast the player moves while running."), SerializeField]
         private float speedRunning = 9.0f;
 
         [SerializeField]
+        private bool canJump;
+
+        [SerializeField]
+        private float jumpDelay;
+
+        [SerializeField]
+        private float ySpeed;
+
+        [SerializeField]
+        private float slideTime;
+
+        [SerializeField]
+        private float slideSpeed;
+
+        [SerializeField]
         public Transform groundCheckerTransform;
+        public Transform groundCheckerTransform2;
         public LayerMask notPlayerMask;
         #endregion
-
+        public bool isSlidingg = false;
         #region PROPERTIES
 
         //Velocity.
@@ -79,6 +98,9 @@ namespace InfimaGames.LowPolyShooterPack
         /// Array of RaycastHits used for ground checking.
         /// </summary>
         private readonly RaycastHit[] groundHits = new RaycastHit[8];
+        public Vector3 movement;
+        public Vector3 slide_dir_m;
+        public float slide_time;
 
         #endregion
 
@@ -106,8 +128,18 @@ namespace InfimaGames.LowPolyShooterPack
             audioSource = GetComponent<AudioSource>();
             audioSource.clip = audioClipWalking;
             audioSource.loop = true;
-        }
 
+            canJump = true;
+            slide_time = slideTime;
+        }
+        public void SetSlideDir(Vector3 newSlideDir)
+        {
+            slide_dir_m = newSlideDir;
+        }
+        public void SetSliding(bool slidinggg)
+        {
+            isSlidingg = slidinggg;
+        }
         /// Checks if the character is on the ground.
         /// 
         /*        private void OnCollisionStay()
@@ -138,15 +170,12 @@ namespace InfimaGames.LowPolyShooterPack
                 }*/
         private void OnCollisionStay()
         {
-            if (Physics.Raycast(groundCheckerTransform.position, Vector3.down, 1f, notPlayerMask))
-            {
-                grounded = true;
-            }
+
         }
         protected override void FixedUpdate()
         {
             //Move.
-            MoveCharacter();
+                MoveCharacter();
 
             //Unground.
             //grounded = false;
@@ -157,51 +186,90 @@ namespace InfimaGames.LowPolyShooterPack
         {
             //Get the equipped weapon!
             equippedWeapon = playerCharacter.GetInventory().GetEquipped();
+            if (Physics.Raycast(groundCheckerTransform.position, Vector3.down, 0.1f, notPlayerMask) && Physics.Raycast(groundCheckerTransform2.position, Vector3.down, 0.1f, notPlayerMask))
+            {
+                grounded = true;
+            }
+            else
+            {
+                grounded = false;
+            }
 
             //Play Sounds!
             PlayFootstepSounds();
             JumpCharacter();
+
+            Invoke(nameof(JumpWait), jumpDelay);
         }
 
         #endregion
 
         #region METHODS
 
-        private void MoveCharacter()
+        public void MoveCharacter()
         {
             #region Calculate Movement Velocity
+            if (grounded)
+            {
+                //Get Movement Input!
 
-            //Get Movement Input!
-            Vector2 frameInput = playerCharacter.GetInputMovement();
-            //Calculate local-space direction by using the player's input.
-            var movement = new Vector3(frameInput.x, 0.0f, frameInput.y);
+                //Running speed calculation.
 
-            //Running speed calculation.
-            if (playerCharacter.IsRunning())
-                movement *= speedRunning;
+
+                if (!isSlidingg)
+                {
+                    Vector2 frameInput = playerCharacter.GetInputMovement();
+
+                    //Calculate local-space direction by using the player's input.
+                    movement = new Vector3(frameInput.x, 0.0f, frameInput.y);
+                    slideSpeed = 1f;
+                    if (playerCharacter.IsRunning())
+                    {
+                        movement *= speedRunning;
+                    }
+                    if (!playerCharacter.IsRunning())
+                    {
+                        //Multiply by the normal walking speed.
+                        movement *= speedWalking;
+                    }
+                    movement = transform.TransformDirection(movement);
+                }
+                else
+                {
+                    slideSpeed = 2.7f;
+                    movement = slide_dir_m;
+                    slide_time -= Time.deltaTime;
+                    if(slide_time <= 0)
+                    {
+                        isSlidingg = false;
+                        slide_time = slideTime;
+                    }
+                }
+                //World space velocity calculation. This allows us to add it to the rigidbody's velocity properly.
+                movement = movement * slideSpeed;
+                #endregion
+
+                //Update Velocity.
+
+                ySpeed = 0;
+                Velocity = new Vector3(movement.x, 0.0f, movement.z);
+            }
             else
             {
-                //Multiply by the normal walking speed.
-                movement *= speedWalking;
+                ySpeed += Physics.gravity.y * Time.deltaTime;
+                Velocity = new Vector3(rigidBody.velocity.x, ySpeed, rigidBody.velocity.z);
             }
-
-            //World space velocity calculation. This allows us to add it to the rigidbody's velocity properly.
-            movement = transform.TransformDirection(movement);
-            #endregion
-
-            //Update Velocity.
-            //if (grounded)
-            //{
-            Velocity = new Vector3(movement.x, 0.0f, movement.z);
-            //}
         }
         private void JumpCharacter()
         {
-            if (Input.GetKeyDown(KeyCode.Space) && grounded)
+            if (Input.GetKeyDown(KeyCode.Space) && grounded && canJump)
             {
-                rigidBody.AddForce(new Vector3(0, 350f, 0), ForceMode.Impulse);
-                grounded = false;
+                rigidBody.AddForce(new Vector3(0, jumpForce, 0), ForceMode.Impulse);
             }
+        }
+        private void JumpWait()
+        {
+            canJump = true;
         }
 
         /// <summary>

@@ -21,12 +21,19 @@ namespace InfimaGames.LowPolyShooterPack
 		[Tooltip("Inventory.")]
 		[SerializeField]
 		private InventoryBehaviour inventory;
+		[Tooltip("Movement.")]
+		[SerializeField]
+		private Movement Movement;
 
 		[Header("Cameras")]
 
 		[Tooltip("Normal Camera.")]
 		[SerializeField]
 		private Camera cameraWorld;
+
+		[Tooltip("Arms")]
+		[SerializeField]
+		private Transform arms;
 
 		[Header("Animation")]
 
@@ -56,6 +63,11 @@ namespace InfimaGames.LowPolyShooterPack
 		/// True if the character is running.
 		/// </summary>
 		private bool running;
+		//my
+		private bool sliding;
+		private bool sliding1;
+		private float lastSlideTime;
+		private Vector3 slide_dir;
 		/// <summary>
 		/// True if the character has its weapon holstered.
 		/// </summary>
@@ -134,6 +146,8 @@ namespace InfimaGames.LowPolyShooterPack
 		/// True if the player is holding the running button.
 		/// </summary>
 		private bool holdingButtonRun;
+		//my
+		private bool holdingButtonSlide;
 		/// <summary>
 		/// True if the player is holding the firing button.
 		/// </summary>
@@ -195,6 +209,7 @@ namespace InfimaGames.LowPolyShooterPack
 			layerActions = characterAnimator.GetLayerIndex("Layer Actions");
 			//Cache a reference to the overlay layer's index.
 			layerOverlay = characterAnimator.GetLayerIndex("Layer Overlay");
+			lastSlideTime = 0.0f;
 		}
 
 		protected override void Update()
@@ -203,6 +218,29 @@ namespace InfimaGames.LowPolyShooterPack
 			aiming = holdingButtonAim && CanAim();
 			//Match Run.
 			running = holdingButtonRun && CanRun();
+			sliding = holdingButtonSlide && CanSlide();
+			if (CanSlide() && Input.GetKey(KeyCode.LeftControl) && !sliding1)
+            {
+				sliding1 = true;
+				//characterAnimator.SetBool("Sliding", true);
+				lastSlideTime = Time.time;
+				slide_dir = Movement.movement;
+				//slide_dir.Normalize();
+				Movement.SetSlideDir(slide_dir);
+				Movement.SetSliding(true);
+				Debug.Log(slide_dir);
+				cameraWorld.transform.localPosition += Vector3.down * 0.5f;
+				arms.transform.localPosition += Vector3.down * 0.5f;
+				Debug.Log(arms.transform.localPosition);
+			}
+			if (Time.time - lastSlideTime > 1.1f && sliding1 == true)
+            {
+				lastSlideTime = 0.0f;
+				sliding1 = false;
+				//characterAnimator.SetBool("Sliding", false);
+			}
+			//Debug.Log(holdingButtonSlide);
+			//Debug.Log(sliding);
 
 			//Holding the firing button.
 			if (holdingButtonFire)
@@ -256,7 +294,9 @@ namespace InfimaGames.LowPolyShooterPack
 		
 		public override bool IsCrosshairVisible() => !aiming && !holstered;
 		public override bool IsRunning() => running;
-		
+		//my
+		public override bool IsSliding() => sliding;
+
 		public override bool IsAiming() => aiming;
 		public override bool IsCursorLocked() => cursorLocked;
 		
@@ -287,6 +327,8 @@ namespace InfimaGames.LowPolyShooterPack
 			//Update Animator Running.
 			const string boolNameRun = "Running";
 			characterAnimator.SetBool(boolNameRun, running);
+			//my
+			const string boolNameSlide = "Sliding";
 		}
 		
 		/// <summary>
@@ -564,6 +606,28 @@ namespace InfimaGames.LowPolyShooterPack
 			//Return.
 			return true;
 		}
+		//my
+		private bool CanSlide()
+		{
+			//Block.
+			if (inspecting)
+				return false;
+
+			//Block.
+			if (reloading || aiming)
+				return false;
+
+			//While trying to fire, we don't want to run. We do this just in case we do fire.
+			if (holdingButtonFire && equippedWeapon.HasAmmunition())
+				return false;
+
+			//This blocks running backwards, or while fully moving sideways.
+			if (axisMovement.y <= 0 || Math.Abs(Mathf.Abs(axisMovement.x) - 1) < 0.01f)
+				return false;
+
+			//Return.
+			return true;
+		}
 
 		#endregion
 
@@ -725,11 +789,37 @@ namespace InfimaGames.LowPolyShooterPack
 				case InputActionPhase.Started:
 					//Start.
 					holdingButtonRun = true;
+					//my
 					break;
 				//Canceled.
 				case InputActionPhase.Canceled:
 					//Stop.
 					holdingButtonRun = false;
+					//my
+					break;
+			}
+		}
+		//my
+		public void OnTrySlide(InputAction.CallbackContext context)
+		{
+			//Block while the cursor is unlocked.
+			if (!cursorLocked)
+				return;
+
+			//Switch.
+			switch (context.phase)
+			{
+				//Started.
+				case InputActionPhase.Started:
+					//Start.
+					//my
+					holdingButtonSlide = true;
+					break;
+				//Canceled.
+				case InputActionPhase.Canceled:
+					//Stop.
+					//my
+					holdingButtonSlide = false;
 					break;
 			}
 		}
