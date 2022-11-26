@@ -2965,10 +2965,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 8147724213134796431}
   Shoot: {fileID: 941158849}
+  shootingDelay: 0.17
   PLS: {fileID: 3258676930818372591, guid: 1f064b0bd00652c49891b3fa97be97ea, type: 3}
   dist: 0
   radius: 50
-  fireRadius: 60
+  fireRadius: 25
 --- !u!195 &615433961
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -4000,15 +4001,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotPoint: {fileID: 2036452075}
   bullet: {fileID: 3258676930818372577, guid: 1f064b0bd00652c49891b3fa97be97ea, type: 3}
+  player: {fileID: 8147724213134796431}
   PLS: {fileID: 3258676930818372591, guid: 1f064b0bd00652c49891b3fa97be97ea, type: 3}
   LastShootTime: 0
   gunBarrell: {fileID: 2036452075}
   bulletTrail: {fileID: 6670010285891972953, guid: 977ca455c27124243bd79883eaf3ae57,
     type: 3}
   shootClip: {fileID: 8300000, guid: 0addcc409a57b4a43b86a3d2310ac5b4, type: 3}
-  ammunitionTotal: 90
+  ammunitionTotal: 900
   AddBulletSpread: 1
-  BulletSpreadVariance: {x: 0.1, y: 0.1, z: 0.1}
+  BulletSpreadVariance: {x: 0.05, y: 0.05, z: 0.05}
   shootingSystem: {fileID: 952390143}
   metalHit: {fileID: 9064919875212695174, guid: 5bb952c27b3c72f44b6c80c40f044853,
     type: 3}
@@ -8376,6 +8378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 0}
   Shoot: {fileID: 0}
+  shootingDelay: 0
   PLS: {fileID: 0}
   dist: 0
   radius: 15
@@ -11100,7 +11103,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6338988061961090200}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11709,8 +11712,8 @@ Transform:
   m_GameObject: {fileID: 9072879620010755341}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2491290244212282128}
   m_RootOrder: 1
@@ -12986,17 +12989,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioClipWalking: {fileID: 8300000, guid: 74abbbf1b1724e34b894191db38e10a0, type: 3}
   audioClipRunning: {fileID: 8300000, guid: d2add02f58e61e640aba3ae9110591cb, type: 3}
+  audioClipSliding: {fileID: 8300000, guid: 387567d6288a82544b8210e8155383e3, type: 3}
   speedWalking: 11
   jumpForce: 500
   speedRunning: 15
   canJump: 0
   jumpDelay: 0.5
   ySpeed: 0
+  slideTime: 0.6
+  slideSpeed: 1
   groundCheckerTransform: {fileID: 976131249}
   groundCheckerTransform2: {fileID: 1838683928}
   notPlayerMask:
     serializedVersion: 2
     m_Bits: 64375
+  isSlidingg: 0
+  movement: {x: 0, y: 0, z: 0}
+  slide_dir_m: {x: 0, y: 0, z: 0}
+  slide_time: 0
 --- !u!114 &6286766814418308390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13010,7 +13020,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventory: {fileID: 2035059356}
+  Movement: {fileID: 6286766814369977897}
   cameraWorld: {fileID: 6596002677318886970}
+  arms: {fileID: 6782986281749087118}
   dampTimeLocomotion: 0.1
   dampTimeAiming: 0.3
   characterAnimator: {fileID: 8731130820689309812}
@@ -13474,6 +13486,10 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 207fb2a2-8add-4ddb-bda7-c1887aeb313a
     m_ActionName: Player/Tutorial[/Keyboard/tab]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: abeb38c7-81ce-4d12-872b-289b6cecfee8
+    m_ActionName: Player/Slide[/Keyboard/leftCtrl]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
@@ -14236,7 +14252,7 @@ Animator:
   m_Controller: {fileID: 22100000, guid: 1288116e5192cd84b808721e453eb7e7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 

@@ -229,15 +229,22 @@ namespace InfimaGames.LowPolyShooterPack
 				Movement.SetSlideDir(slide_dir);
 				Movement.SetSliding(true);
 				Debug.Log(slide_dir);
-				cameraWorld.transform.localPosition += Vector3.down * 0.5f;
-				arms.transform.localPosition += Vector3.down * 0.5f;
+				//cameraWorld.transform.localPosition += Vector3.down * 0.5f;
+				characterAnimator.enabled = false;
+				arms.transform.localPosition += Vector3.down * 0.9f;
+				//arms.transform.localPosition = Vector3.Lerp(arms.transform.localPosition, Vector3.down*0.5f, Time.deltaTime * 6f);
 				Debug.Log(arms.transform.localPosition);
 			}
-			if (Time.time - lastSlideTime > 1.1f && sliding1 == true)
+			if (Time.time - lastSlideTime > 0.6f && sliding1 == true)
+            {
+				//arms.transform.localPosition += Vector3.up * 0.9f;
+				//characterAnimator.SetBool("Sliding", false);
+				characterAnimator.enabled = true;
+			}
+			if(Time.time - lastSlideTime > 1.5f && sliding1 == true)
             {
 				lastSlideTime = 0.0f;
 				sliding1 = false;
-				//characterAnimator.SetBool("Sliding", false);
 			}
 			//Debug.Log(holdingButtonSlide);
 			//Debug.Log(sliding);
@@ -279,8 +286,8 @@ namespace InfimaGames.LowPolyShooterPack
 			//Make sure that we have a kinematics component!
 			if(characterKinematics != null)
 			{
-				//Compute.
-				characterKinematics.Compute();
+					//Compute.
+					characterKinematics.Compute();
 			}
 		}
 		

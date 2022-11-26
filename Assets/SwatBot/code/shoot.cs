@@ -7,6 +7,7 @@ public class shoot : MonoBehaviour
     
     public Transform shotPoint;
     public GameObject bullet;
+    public GameObject player;
     public MeshRenderer PLS;
     public float LastShootTime;
     public Transform gunBarrell;
@@ -136,18 +137,28 @@ public class shoot : MonoBehaviour
                 
                 
                 Vector3 direction = GetDirection();
-
-                if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue, Mask) || true)
+                Ray raySeePlayerM4 = new Ray();
+                raySeePlayerM4.origin = shotPoint.transform.position;
+                raySeePlayerM4.direction = shotPoint.forward;
+                //Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+                RaycastHit hittt;
+                if (Physics.Raycast(raySeePlayerM4, out hittt))
                 {
-                    
-                    Bot.GetComponent<Animator>().SetBool("Fire", true);
-                    PLS.enabled = true;
-                    shootingSystem.Play();
-                    TrailRenderer trail = Instantiate(BulletTrail, shotPoint.position, Quaternion.identity);
-                    trail.material.color = new Color(255, 215, 0);
-                    StartCoroutine(SpawnTrail(trail, hit));
-                    LastShootTime = Time.time;
-                    ammunitionCurrent--;
+                   // if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
+                    //{
+                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue, Mask) || true)
+                        {
+
+                            //Bot.GetComponent<Animator>().SetBool("Fire", true);
+                            PLS.enabled = true;
+                            shootingSystem.Play();
+                            TrailRenderer trail = Instantiate(BulletTrail, shotPoint.position, Quaternion.identity);
+                            trail.material.color = new Color(255, 215, 0);
+                            StartCoroutine(SpawnTrail(trail, hit));
+                            LastShootTime = Time.time;
+                            ammunitionCurrent--;
+                        }
+                    //}
                 }
                 //
              

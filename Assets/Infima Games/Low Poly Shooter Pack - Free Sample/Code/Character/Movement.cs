@@ -20,6 +20,10 @@ namespace InfimaGames.LowPolyShooterPack
         [SerializeField]
         private AudioClip audioClipRunning;
 
+        [Tooltip("The audio clip that is played while sliding.")]
+        [SerializeField]
+        private AudioClip audioClipSliding;
+
         [Header("Speeds")]
 
         [SerializeField]
@@ -236,7 +240,7 @@ namespace InfimaGames.LowPolyShooterPack
                 }
                 else
                 {
-                    slideSpeed = 2.7f;
+                    slideSpeed = 2.2f;
                     movement = slide_dir_m;
                     slide_time -= Time.deltaTime;
                     if(slide_time <= 0)
@@ -280,11 +284,21 @@ namespace InfimaGames.LowPolyShooterPack
             //Check if we're moving on the ground. We don't need footsteps in the air.
             if (grounded && rigidBody.velocity.sqrMagnitude > 0.1f)
             {
-                //Select the correct audio clip to play.
-                audioSource.clip = playerCharacter.IsRunning() ? audioClipRunning : audioClipWalking;
-                //Play it!
-                if (!audioSource.isPlaying)
-                    audioSource.Play();
+                if (isSlidingg)
+                {
+                    audioSource.clip = audioClipSliding;
+                }
+                else
+                {
+                    //Select the correct audio clip to play.
+                    audioSource.clip = playerCharacter.IsRunning() ? audioClipRunning : audioClipWalking;
+                }
+                    //Play it!
+                    if (!audioSource.isPlaying)
+                    {
+                        audioSource.Play();
+                    }
+                
             }
             //Pause it if we're doing something like flying, or not moving!
             else if (audioSource.isPlaying)
