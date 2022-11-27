@@ -18,7 +18,7 @@ public class shoot : MonoBehaviour
 
     [Tooltip("Total Ammunition.")]
     [SerializeField]
-    private int ammunitionTotal = 110;
+    public int ammunitionTotal = 110;
 
     [SerializeField]
     public bool AddBulletSpread = true;
@@ -40,19 +40,20 @@ public class shoot : MonoBehaviour
 
     [Tooltip("Magazine ammo")]
     [SerializeField]
-    private int Ammo = 30;
+    public int Ammo = 30;
 
 
 
 
     [Tooltip("Magazine Ammunition")]
     [SerializeField]
-    private int ammunitionCurrent = 30;
+    public int ammunitionCurrent = 30;
     
     public AI Bot;
     // Start is called before the first frame update
     public bool Canshoot = true;
-
+    public float lastReloadTime = 0f;
+    public bool checkTimer = false;
 
     void Start()
     {
@@ -81,10 +82,6 @@ public class shoot : MonoBehaviour
     }
     public void Reload()
     {
-        if(ammunitionCurrent != Ammo)
-        {
-            if (ammunitionTotal !=0)
-            {
 /*                if (ammunitionCurrent < 1 && ammunitionTotal < 1)
                 {
                     Bot.GetComponent<Animator>().SetBool("Fire", false);
@@ -94,38 +91,31 @@ public class shoot : MonoBehaviour
                 else 
                 {*/
                     // Add reload animation
-                    Bot.GetComponent<Animator>().SetBool("Fire", false);
-                    Bot.GetComponent<Animator>().SetBool("reload", true);
-                    if (Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading") &&
-                        Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-                    {
-                   
-                    Bot.GetComponent<Animator>().SetBool("reload", false);
-                        if (ammunitionCurrent + ammunitionTotal >= Ammo)
-                        {
-                            ammunitionTotal = ammunitionTotal - (Ammo - ammunitionCurrent);
-                            //Update the value by a certain amount.
-                            ammunitionCurrent = Ammo;
-                        
-                    }
-                        else
-                        {
-                            ammunitionCurrent = ammunitionCurrent + ammunitionTotal;
-                            ammunitionTotal = 0;
-                        }
-                        if (ammunitionCurrent > 1)
-                        {
-                
-                            shot();
-                        }
-                       
-                    }
-                 
-
-                
+if(ammunitionCurrent != Ammo)
+    {
+    if(ammunitionTotal != 0)
+        {
+        Bot.GetComponent<Animator>().SetBool("Fire", false);
+        Bot.GetComponent<Animator>().SetBool("reload", true);
+        if (Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading") &&
+            Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f) 
+            { 
+            Bot.GetComponent<Animator>().SetBool("reload", false);
+            Debug.Log("false reload");
+            if (ammunitionCurrent + ammunitionTotal >= Ammo)
+                {
+                ammunitionTotal = ammunitionTotal - (Ammo - ammunitionCurrent);
+                //Update the value by a certain amount.
+                ammunitionCurrent = Ammo;
+                }
+            else
+                {
+                    ammunitionCurrent = ammunitionCurrent + ammunitionTotal;
+                    ammunitionTotal = 0;
+                }
             }
         }
-    }
+    }}
 
     public void shot()
     {
@@ -134,17 +124,15 @@ public class shoot : MonoBehaviour
         {
             if (LastShootTime + shootDelay < Time.time)
             {
-                
-                
                 Vector3 direction = GetDirection();
-                Ray raySeePlayerM4 = new Ray();
+/*             Ray raySeePlayerM4 = new Ray();
                 raySeePlayerM4.origin = shotPoint.transform.position;
                 raySeePlayerM4.direction = shotPoint.forward;
                 //Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
-                RaycastHit hittt;
-                if (Physics.Raycast(raySeePlayerM4, out hittt))
-                {
-                   // if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
+                RaycastHit hittt;*/
+/*                if (Physics.Raycast(raySeePlayerM4, out hittt))
+                {*/
+                   //if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
                     //{
                         if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue, Mask) || true)
                         {
@@ -159,7 +147,7 @@ public class shoot : MonoBehaviour
                             ammunitionCurrent--;
                         }
                     //}
-                }
+                //}
                 //
              
                 /*muzzleBehaviour.Effect();*/

@@ -5,10 +5,12 @@ using UnityEngine.InputSystem;
 using UnityEngine.AI;
 public sealed class AI : AIBehavior
 {
-    private float timer;
-    public GameObject Player;
-    private int ammunitionCurrent;
-    private magazineBehaviorBot equippedMagazine;
+	private float timer;
+	public GameObject Player;
+	public Transform shotPoint;
+	public Transform seePlayer;
+	private int ammunitionCurrent;
+	private magazineBehaviorBot equippedMagazine;
 	public shoot Shoot;
 	float elapsed = 0f;
 	public float shootingDelay;
@@ -20,18 +22,29 @@ public sealed class AI : AIBehavior
 	public float fireRadius = 25;
 	bool firstshoot = true;
 	bool hasSeenPlayer;
+	float lastShootingTime = 0f;
+	bool isShooting = false;
+	bool needToMove = false;
+	float needToMoveTime = 0f;
 	// Start is called before the first frame update
 	void Start()
-    {
+	{
 		nav = GetComponent<NavMeshAgent>();
-    }
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-		dist = Vector3.Distance(Player.transform.position, transform.position);
-        if (dist > radius)
+	// Update is called once per frame
+	void Update()
+	{
+        if (needToMove)
         {
+			if(Time.time - needToMoveTime > 0.3f)
+            {
+				needToMove = false;
+            }
+        }
+		dist = Vector3.Distance(Player.transform.position, transform.position);
+		if (dist > radius)
+		{
 			nav.enabled = false;
 			gameObject.GetComponent<Animator>().SetBool("Fire", false);
 			gameObject.GetComponent<Animator>().SetBool("run", false);
@@ -48,80 +61,65 @@ public sealed class AI : AIBehavior
 		if (dist < fireRadius)
 		{
 			gameObject.GetComponent<Animator>().SetBool("run", false);
+			if (Shoot.ammunitionCurrent != Shoot.Ammo)
+			{
+				if (Shoot.ammunitionCurrent < 1)
+				{
+					if (Shoot.ammunitionTotal != 0)
+					{
+						Shoot.Reload();
+						lastShootingTime = Time.time;
+					}
+				}
+			}
 			transform.LookAt(Player.transform.position);
 			transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-			/*			gameObject.GetComponent<Animator>().SetBool("idle", false);
-						gameObject.GetComponent<Animator>().SetBool("Fire", true);*/
-
-			//Setting up Vector3's for rays
-			/*			Vector3 rayPosition = new Vector3(transform.position.x, 1.1f, transform.position.z);
-                        Vector3 leftRayRotation = Quaternion.AngleAxis(-5, transform.up) * transform.forward;
-                        Vector3 rightRayRotation = Quaternion.AngleAxis(5, transform.up) * transform.forward;
-
-                        //Constructing rays
-                        Ray rayCenter = new Ray(rayPosition, transform.forward);
-                        Ray rayLeft = new Ray(rayPosition, leftRayRotation);
-                        Ray rayRight = new Ray(rayPosition, rightRayRotation);
-
-                        Debug.DrawRay(rayPosition, transform.forward * fireRadius, Color.red);
-                        Debug.DrawRay(rayPosition, leftRayRotation * fireRadius, Color.blue);
-                        Debug.DrawRay(rayPosition, rightRayRotation * fireRadius, Color.blue);
-
-                        RaycastHit hit1;
-                        RaycastHit hit2;
-                        RaycastHit hit3;*/
-
-
-            Ray raySeePlayer = new Ray();
-            raySeePlayer.origin = transform.position + new Vector3(0, 1.1f, 0);
+			Ray raySeePlayer = new Ray();
+			//raySeePlayer.origin = transform.position + new Vector3(0.18f, 1.1f, 0);
+			raySeePlayer.origin = seePlayer.transform.position;
 			Vector3 directionCor = (Player.transform.position - raySeePlayer.origin + new Vector3(0, 1.1f, 0)).normalized;
 			raySeePlayer.direction = directionCor;
 			Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.red);
-            RaycastHit hit;
-			Debug.Log(Player.transform.position);
+			RaycastHit hit;
 			if (Physics.Raycast(raySeePlayer, out hit))
 			{
-
-
-				/*            Ray raySeePlayer2 = new Ray();
-							raySeePlayer2.origin = transform.position + new Vector3(0, 1.1f, 0);
-							raySeePlayer2.direction = (Player.transform.position) * fireRadius;
-							Debug.DrawRay(raySeePlayer2.origin, raySeePlayer2.direction * fireRadius, Color.red);
-							RaycastHit hitt;
-							Physics.Raycast(raySeePlayer, out hitt);
-							Debug.Log(Player.transform.position);*/
-				/*            Physics.Raycast(rayCenter, out hit1);
-							Physics.Raycast(rayLeft, out hit2);
-							Physics.Raycast(rayRight, out hit3);
-							if (Physics.Raycast(rayCenter, out hit1) || Physics.Raycast(rayLeft, out hit2) || Physics.Raycast(rayRight, out hit3))
-							{*/
-				if (hit.collider.tag == "Player")
+				if (hit.collider.tag == "Player" && !needToMove)
 				{
-					Debug.Log("seen");
 					nav.enabled = false;
 					hasSeenPlayer = true;
 					lastSeenTime = Time.time;
 					//shooting delay
 					elapsed += Time.deltaTime;
-					/*					if (firstshoot) {
-											shootingDelay = 0.25f;
-											gameObject.GetComponent<Animator>().SetBool("Fire", true);
-											gameObject.GetComponent<Animator>().SetBool("idle", false);
-										}*/
+					gameObject.GetComponent<Animator>().SetBool("Fire", true);
+					gameObject.GetComponent<Animator>().SetBool("idle", false);
 					if (elapsed >= shootingDelay)
 					{
 						elapsed = elapsed % 0.17f;
-						gameObject.GetComponent<Animator>().SetBool("Fire", true);
-						gameObject.GetComponent<Animator>().SetBool("idle", false);
-						Shoot.shot();
-						//firstshoot = false;
+						Ray raySeePlayerM4 = new Ray();
+						raySeePlayerM4.origin = shotPoint.transform.position;
+						raySeePlayerM4.direction = shotPoint.forward;
+						//Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+						RaycastHit hittt;
+						if (Physics.Raycast(raySeePlayerM4, out hittt))
+						{
+							if (hittt.collider.tag == "Player")
+							{
+								Shoot.shot();
+								isShooting = true;
+								lastShootingTime = Time.time;
+                            }
+                            else
+                            {
+								isShooting = false;
+                            }
+						}
 					}
 				}
 				else
 				{
-					firstshoot = true;
+					isShooting = false;
+					lastShootingTime = Time.time;
 					gameObject.GetComponent<Animator>().SetBool("Fire", false);
-					gameObject.GetComponent<Animator>().SetBool("idle", true);
 					if (Time.time - lastSeenTime > 10f && hasSeenPlayer)
 					{
 						hasSeenPlayer = false;
@@ -132,6 +130,8 @@ public sealed class AI : AIBehavior
 					}
 					else
 					{
+						gameObject.GetComponent<Animator>().SetBool("run", false);
+						gameObject.GetComponent<Animator>().SetBool("idle", true);
 						nav.enabled = false;
 					}
 					if (nav.enabled)
@@ -143,13 +143,23 @@ public sealed class AI : AIBehavior
 						gameObject.GetComponent<Animator>().SetBool("run", true);
 					}
 				}
+				//if raycast can see the player but bot isnt shooting because raycast from the gun cannot see the player, so he must move (0.3f secs)
+				if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Firing_Rifle") && !isShooting && (Time.time - lastShootingTime > 1.0f) && lastShootingTime != 0f)
+				{
+					needToMove = true;
+					needToMoveTime = Time.time;
+					nav.enabled = true;
+					nav.SetDestination(Player.transform.position);
+					gameObject.GetComponent<Animator>().SetBool("Fire", false);
+					gameObject.GetComponent<Animator>().SetBool("idle", false);
+					gameObject.GetComponent<Animator>().SetBool("run", true);
+				}
 			}
 		}
 	}
+}
 		
 
-
-}
 /*	void OnTriggerStay(Collider col)
 	{
 
