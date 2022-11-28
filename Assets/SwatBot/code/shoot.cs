@@ -4,16 +4,10 @@ using UnityEngine;
 
 public class shoot : MonoBehaviour
 {
-    
     public Transform shotPoint;
-    public GameObject bullet;
     public GameObject player;
-    public MeshRenderer PLS;
     public float LastShootTime;
-    public Transform gunBarrell;
     public TrailRenderer bulletTrail;
-    AudioSource audioSource;
-    public AudioClip shootClip;
     [Header("Settings")]
 
     [Tooltip("Total Ammunition.")]
@@ -34,9 +28,6 @@ public class shoot : MonoBehaviour
     public TrailRenderer BulletTrail;
     [SerializeField]
     public float shootDelay = 0.5f;
-    [SerializeField]
-    public LayerMask Mask;
-    
 
     [Tooltip("Magazine ammo")]
     [SerializeField]
@@ -97,8 +88,8 @@ if(ammunitionCurrent != Ammo)
         {
         Bot.GetComponent<Animator>().SetBool("Fire", false);
         Bot.GetComponent<Animator>().SetBool("reload", true);
-        if (Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading") &&
-            Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f) 
+        if (Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading") && 
+            Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f) 
             { 
             Bot.GetComponent<Animator>().SetBool("reload", false);
             Debug.Log("false reload");
@@ -124,6 +115,7 @@ if(ammunitionCurrent != Ammo)
         {
             if (LastShootTime + shootDelay < Time.time)
             {
+                Debug.Log("shooting");
                 Vector3 direction = GetDirection();
 /*             Ray raySeePlayerM4 = new Ray();
                 raySeePlayerM4.origin = shotPoint.transform.position;
@@ -134,11 +126,10 @@ if(ammunitionCurrent != Ammo)
                 {*/
                    //if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
                     //{
-                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue, Mask) || true)
+                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue) || true)
                         {
 
                             //Bot.GetComponent<Animator>().SetBool("Fire", true);
-                            PLS.enabled = true;
                             shootingSystem.Play();
                             TrailRenderer trail = Instantiate(BulletTrail, shotPoint.position, Quaternion.identity);
                             trail.material.color = new Color(255, 215, 0);

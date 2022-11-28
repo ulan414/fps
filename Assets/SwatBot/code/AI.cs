@@ -15,7 +15,6 @@ public sealed class AI : AIBehavior
 	float elapsed = 0f;
 	public float shootingDelay;
 	float lastSeenTime = 0f;
-	public MeshRenderer PLS;
 	public float dist;
 	NavMeshAgent nav;
 	public float radius = 35;
@@ -26,6 +25,7 @@ public sealed class AI : AIBehavior
 	bool isShooting = false;
 	bool needToMove = false;
 	float needToMoveTime = 0f;
+	float rotationSpeed = 14f;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -72,12 +72,23 @@ public sealed class AI : AIBehavior
 					}
 				}
 			}
-			transform.LookAt(Player.transform.position);
-			transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+			/*			transform.LookAt(Player.transform.position);
+						transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);*/
+			Vector3 directionCor = (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0)).normalized;
+
+			if (shootingDelay == 0.17f)
+            {
+				Rotate(directionCor);
+			}
+			else
+            {
+				Vector3 directionCor1 = (Quaternion.AngleAxis(38, transform.up) * (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0))).normalized;
+				Rotate(directionCor1);
+			}
+
 			Ray raySeePlayer = new Ray();
 			//raySeePlayer.origin = transform.position + new Vector3(0.18f, 1.1f, 0);
 			raySeePlayer.origin = seePlayer.transform.position;
-			Vector3 directionCor = (Player.transform.position - raySeePlayer.origin + new Vector3(0, 1.1f, 0)).normalized;
 			raySeePlayer.direction = directionCor;
 			Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.red);
 			RaycastHit hit;
@@ -98,7 +109,7 @@ public sealed class AI : AIBehavior
 						Ray raySeePlayerM4 = new Ray();
 						raySeePlayerM4.origin = shotPoint.transform.position;
 						raySeePlayerM4.direction = shotPoint.forward;
-						//Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+						Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
 						RaycastHit hittt;
 						if (Physics.Raycast(raySeePlayerM4, out hittt))
 						{
@@ -156,6 +167,17 @@ public sealed class AI : AIBehavior
 				}
 			}
 		}
+	}
+	void Rotate(Vector3 directionCor)
+	{
+
+		if (directionCor == Vector3.zero)
+			return;
+
+		Quaternion rotation = Quaternion.LookRotation(directionCor);
+
+		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
+		transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
 	}
 }
 		
