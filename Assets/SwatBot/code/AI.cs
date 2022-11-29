@@ -9,6 +9,7 @@ public sealed class AI : AIBehavior
 	public GameObject Player;
 	public Transform shotPoint;
 	public Transform seePlayer;
+	public float rotateAngle = 0f;
 	private int ammunitionCurrent;
 	private magazineBehaviorBot equippedMagazine;
 	public shoot Shoot;
@@ -80,18 +81,12 @@ public sealed class AI : AIBehavior
 			}
 			/*			transform.LookAt(Player.transform.position);
 						transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);*/
+			//shoot triger(raycast)
 			Vector3 directionCor = (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0)).normalized;
-
-			if (shootingDelay == 0.17f)
-            {
-				Rotate(directionCor);
-			}
-			else
-            {
-				Vector3 directionCor1 = (Quaternion.AngleAxis(22.8f, transform.up) * (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0))).normalized;
-				Rotate(directionCor1);
-			}
-
+			//rotate character
+			Vector3 directionCor1 = (Quaternion.AngleAxis(rotateAngle, transform.up) * (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0))).normalized;
+			Rotate(directionCor1);
+			
 			Ray raySeePlayer = new Ray();
 			//raySeePlayer.origin = transform.position + new Vector3(0.18f, 1.1f, 0);
 			raySeePlayer.origin = seePlayer.transform.position;
@@ -170,20 +165,16 @@ public sealed class AI : AIBehavior
 					if (hasSeenPlayer)
 					{
 						nav.enabled = true;
+						nav.SetDestination(Player.transform.position);
+						gameObject.GetComponent<Animator>().SetBool("Fire", false);
+						gameObject.GetComponent<Animator>().SetBool("idle", false);
+						gameObject.GetComponent<Animator>().SetBool("run", true);
 					}
 					else
 					{
 						gameObject.GetComponent<Animator>().SetBool("run", false);
 						gameObject.GetComponent<Animator>().SetBool("idle", true);
 						nav.enabled = false;
-					}
-					if (nav.enabled)
-					{
-						nav.enabled = true;
-						nav.SetDestination(Player.transform.position);
-						gameObject.GetComponent<Animator>().SetBool("Fire", false);
-						gameObject.GetComponent<Animator>().SetBool("idle", false);
-						gameObject.GetComponent<Animator>().SetBool("run", true);
 					}
 				}
 				//if raycast can see the player but bot isnt shooting because raycast from the gun cannot see the player, so he must move (0.3f secs)
