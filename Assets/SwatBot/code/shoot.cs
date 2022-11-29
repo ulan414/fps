@@ -115,7 +115,6 @@ if(ammunitionCurrent != Ammo)
         {
             if (LastShootTime + shootDelay < Time.time)
             {
-                Debug.Log("shooting");
                 Vector3 direction = GetDirection();
 /*             Ray raySeePlayerM4 = new Ray();
                 raySeePlayerM4.origin = shotPoint.transform.position;

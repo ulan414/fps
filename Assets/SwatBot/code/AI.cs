@@ -24,7 +24,9 @@ public sealed class AI : AIBehavior
 	float lastShootingTime = 0f;
 	bool isShooting = false;
 	bool needToMove = false;
+	bool searching = false;
 	float needToMoveTime = 0f;
+	float searchingTime = 0f;
 	float rotationSpeed = 14f;
 	// Start is called before the first frame update
 	void Start()
@@ -35,11 +37,15 @@ public sealed class AI : AIBehavior
 	// Update is called once per frame
 	void Update()
 	{
-        if (needToMove)
+        if (needToMove || searching)
         {
 			if(Time.time - needToMoveTime > 0.3f)
             {
 				needToMove = false;
+            }
+			if(Time.time - searchingTime > 0.3f)
+            {
+				searching = false;
             }
         }
 		dist = Vector3.Distance(Player.transform.position, transform.position);
@@ -82,7 +88,7 @@ public sealed class AI : AIBehavior
 			}
 			else
             {
-				Vector3 directionCor1 = (Quaternion.AngleAxis(38, transform.up) * (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0))).normalized;
+				Vector3 directionCor1 = (Quaternion.AngleAxis(22.8f, transform.up) * (Player.transform.position - seePlayer.transform.position + new Vector3(0, 1.1f, 0))).normalized;
 				Rotate(directionCor1);
 			}
 
@@ -90,7 +96,7 @@ public sealed class AI : AIBehavior
 			//raySeePlayer.origin = transform.position + new Vector3(0.18f, 1.1f, 0);
 			raySeePlayer.origin = seePlayer.transform.position;
 			raySeePlayer.direction = directionCor;
-			Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.red);
+			//Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.blue);
 			RaycastHit hit;
 			if (Physics.Raycast(raySeePlayer, out hit))
 			{
@@ -101,11 +107,29 @@ public sealed class AI : AIBehavior
 					lastSeenTime = Time.time;
 					//shooting delay
 					elapsed += Time.deltaTime;
+
+					gameObject.GetComponent<Animator>().SetBool("run", false);
 					gameObject.GetComponent<Animator>().SetBool("Fire", true);
 					gameObject.GetComponent<Animator>().SetBool("idle", false);
+					if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Firing_Rifle"))
+					{
+						Debug.Log("Firing");
+					}
+					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idle"))
+					{
+						Debug.Log("idle");
+					}
+					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Run"))
+					{
+						Debug.Log("run");
+					}
+					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading"))
+					{
+						Debug.Log("Reloading");
+					}
 					if (elapsed >= shootingDelay)
 					{
-						elapsed = elapsed % 0.17f;
+						elapsed = elapsed % shootingDelay;
 						Ray raySeePlayerM4 = new Ray();
 						raySeePlayerM4.origin = shotPoint.transform.position;
 						raySeePlayerM4.direction = shotPoint.forward;
@@ -113,7 +137,7 @@ public sealed class AI : AIBehavior
 						RaycastHit hittt;
 						if (Physics.Raycast(raySeePlayerM4, out hittt))
 						{
-							if (hittt.collider.tag == "Player")
+							if (hittt.collider.tag == "Player") 
 							{
 								Shoot.shot();
 								isShooting = true;
@@ -128,7 +152,15 @@ public sealed class AI : AIBehavior
 				}
 				else
 				{
+					//searching = true;
+					//searchingTime = Time.time;
+					if (!needToMove)
+					{
+						needToMove = true;
+						needToMoveTime = Time.time;
+					}
 					isShooting = false;
+					Debug.Log("Nottt");
 					lastShootingTime = Time.time;
 					gameObject.GetComponent<Animator>().SetBool("Fire", false);
 					if (Time.time - lastSeenTime > 10f && hasSeenPlayer)
@@ -155,7 +187,7 @@ public sealed class AI : AIBehavior
 					}
 				}
 				//if raycast can see the player but bot isnt shooting because raycast from the gun cannot see the player, so he must move (0.3f secs)
-				if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Firing_Rifle") && !isShooting && (Time.time - lastShootingTime > 1.0f) && lastShootingTime != 0f)
+				if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Firing_Rifle") && !isShooting && (Time.time - lastShootingTime > 2.3f) && lastShootingTime != 0f)
 				{
 					needToMove = true;
 					needToMoveTime = Time.time;
