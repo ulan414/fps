@@ -9,11 +9,14 @@ public sealed class AI : AIBehavior
 	public GameObject Player;
 	public Transform shotPoint;
 	public Transform seePlayer;
+	public TrailRenderer bulletTrailFirstPart;
 	public float rotateAngle = 0f;
 	private int ammunitionCurrent;
 	private magazineBehaviorBot equippedMagazine;
 	public shoot Shoot;
 	float elapsed = 0f;
+	float elapsedFirstPart = 0f;
+	public float LastShootTimeFirstPart;
 	public float shootingDelay;
 	float lastSeenTime = 0f;
 	public float dist;
@@ -25,10 +28,12 @@ public sealed class AI : AIBehavior
 	float lastShootingTime = 0f;
 	bool isShooting = false;
 	bool needToMove = false;
-	bool searching = false;
 	float needToMoveTime = 0f;
-	float searchingTime = 0f;
 	float rotationSpeed = 14f;
+	[SerializeField]
+	public TrailRenderer BulletTrailFirstPart;
+	[SerializeField]
+	public ParticleSystem shootingSystem;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -38,15 +43,11 @@ public sealed class AI : AIBehavior
 	// Update is called once per frame
 	void Update()
 	{
-        if (needToMove || searching)
+        if (needToMove)
         {
 			if(Time.time - needToMoveTime > 0.3f)
             {
 				needToMove = false;
-            }
-			if(Time.time - searchingTime > 0.3f)
-            {
-				searching = false;
             }
         }
 		dist = Vector3.Distance(Player.transform.position, transform.position);
@@ -101,49 +102,56 @@ public sealed class AI : AIBehavior
 					hasSeenPlayer = true;
 					lastSeenTime = Time.time;
 					//shooting delay
-					elapsed += Time.deltaTime;
-
 					gameObject.GetComponent<Animator>().SetBool("run", false);
 					gameObject.GetComponent<Animator>().SetBool("Fire", true);
 					gameObject.GetComponent<Animator>().SetBool("idle", false);
-					if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Firing_Rifle"))
-					{
-						Debug.Log("Firing");
-					}
-					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("idle"))
-					{
-						Debug.Log("idle");
-					}
-					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Run"))
-					{
-						Debug.Log("run");
-					}
-					else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Reloading"))
-					{
-						Debug.Log("Reloading");
-					}
+					elapsed += Time.deltaTime;
+					elapsedFirstPart += Time.deltaTime;
+
+
 					if (elapsed >= shootingDelay)
-					{
-						elapsed = elapsed % shootingDelay;
-						Ray raySeePlayerM4 = new Ray();
-						raySeePlayerM4.origin = shotPoint.transform.position;
-						raySeePlayerM4.direction = shotPoint.forward;
-						Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
-						RaycastHit hittt;
-						if (Physics.Raycast(raySeePlayerM4, out hittt))
 						{
-							if (hittt.collider.tag == "Player") 
+							elapsed = elapsed % shootingDelay;
+							Ray raySeePlayerM4 = new Ray();
+							raySeePlayerM4.origin = shotPoint.transform.position;
+							raySeePlayerM4.direction = shotPoint.forward;
+							Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+							RaycastHit hittt;
+
+							if (Physics.Raycast(raySeePlayerM4, out hittt))
 							{
-								Shoot.shot();
-								isShooting = true;
-								lastShootingTime = Time.time;
-                            }
-                            else
-                            {
-								isShooting = false;
-                            }
+								if (hittt.collider.tag == "Player")
+								{
+								//first par (bullet traektory)
+								Vector3 direction = shotPoint.transform.forward;
+								direction.Normalize();
+								if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hitFirstPart, float.MaxValue) || true)
+								{
+									//Bot.GetComponent<Animator>().SetBool("Fire", true);
+									Debug.Log("First Part");
+									shootingSystem.Play();
+									TrailRenderer trail = Instantiate(BulletTrailFirstPart, shotPoint.position, Quaternion.identity);
+									trail.material.color = new Color(0, 0, 0);
+									StartCoroutine(SpawnTrail(trail, hitFirstPart));
+								}
+								//second part (real bullet shooting)
+								Debug.Log(elapsedFirstPart);
+								if (elapsedFirstPart >= 2.25f)
+								{
+									Debug.Log("Second Part");
+									elapsedFirstPart = elapsedFirstPart % 2.25f;
+									Shoot.shot();
+									isShooting = true;
+									lastShootingTime = Time.time;
+								}
+								}
+								else
+								{
+									isShooting = false;
+								}
+							}
 						}
-					}
+					
 				}
 				else
 				{
@@ -201,6 +209,21 @@ public sealed class AI : AIBehavior
 
 		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationSpeed * Time.deltaTime);
 		transform.eulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+	}
+	public IEnumerator SpawnTrail(TrailRenderer Trail, RaycastHit Hit)
+	{
+		float time = 0;
+		Vector3 startPosition = Trail.transform.position;
+		while (time < 1)
+		{
+			Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
+			/*            Trail.transform.position = transform.position + (shotPoint.transform.forward * 200); 
+            */
+			time += Time.deltaTime / Trail.time;
+
+			yield return null;
+		}
+		Destroy(Trail.gameObject, Trail.time);
 	}
 }
 		

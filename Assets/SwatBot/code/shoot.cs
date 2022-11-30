@@ -127,7 +127,6 @@ if(ammunitionCurrent != Ammo)
                     //{
                         if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue) || true)
                         {
-
                             //Bot.GetComponent<Animator>().SetBool("Fire", true);
                             shootingSystem.Play();
                             TrailRenderer trail = Instantiate(BulletTrail, shotPoint.position, Quaternion.identity);
@@ -139,7 +138,6 @@ if(ammunitionCurrent != Ammo)
                     //}
                 //}
                 //
-             
                 /*muzzleBehaviour.Effect();*/
                 if (ammunitionCurrent < 1)
                 {
@@ -197,12 +195,6 @@ if(ammunitionCurrent != Ammo)
                 Instantiate(sandHit, Hit.point, Quaternion.LookRotation(Hit.normal));
             }
         }
-
-
-    
-        
-        
-
         Destroy(Trail.gameObject, Trail.time);
     }
 }
