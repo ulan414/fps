@@ -28,6 +28,8 @@ public class shoot : MonoBehaviour
     public TrailRenderer BulletTrail;
     [SerializeField]
     public float shootDelay = 0.5f;
+    Vector3 playerPositionWhenShoot = new Vector3(0, 0, 0);
+
 
     [Tooltip("Magazine ammo")]
     [SerializeField]
@@ -113,8 +115,8 @@ if(ammunitionCurrent != Ammo)
         CanShoot();
         if (Canshoot)
         {
-            if (LastShootTime + shootDelay < Time.time)
-            {
+/*            if (LastShootTime + shootDelay < Time.time)
+            {*/
                 Vector3 direction = GetDirection();
 /*             Ray raySeePlayerM4 = new Ray();
                 raySeePlayerM4.origin = shotPoint.transform.position;
@@ -125,7 +127,7 @@ if(ammunitionCurrent != Ammo)
                 {*/
                    //if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
                     //{
-                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue) || true)
+                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue))
                         {
                             //Bot.GetComponent<Animator>().SetBool("Fire", true);
                             shootingSystem.Play();
@@ -144,7 +146,7 @@ if(ammunitionCurrent != Ammo)
                     Canshoot = false;
                     Reload();
                 }
-            }
+            //}
         }
         else
         {
@@ -171,7 +173,7 @@ if(ammunitionCurrent != Ammo)
         Vector3 startPosition = Trail.transform.position;
         while (time < 1)
         {
-            Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
+            Trail.transform.position = Vector3.Lerp(startPosition, playerPositionWhenShoot, time);
             /*            Trail.transform.position = transform.position + (shotPoint.transform.forward * 200); 
             */
             time += Time.deltaTime / Trail.time;
@@ -196,5 +198,9 @@ if(ammunitionCurrent != Ammo)
             }
         }
         Destroy(Trail.gameObject, Trail.time);
+    }
+    public void setPlayerPosition(Vector3 PlayerPosition)
+    {
+        playerPositionWhenShoot = PlayerPosition;
     }
 }
