@@ -28,6 +28,8 @@ public class shoot : MonoBehaviour
     public TrailRenderer BulletTrail;
     [SerializeField]
     public float shootDelay = 0.5f;
+    [SerializeField]
+    public int damage = 0;
     Vector3 playerPositionWhenShoot = new Vector3(0, 0, 0);
 
 
@@ -94,7 +96,6 @@ if(ammunitionCurrent != Ammo)
             Bot.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.7f) 
             { 
             Bot.GetComponent<Animator>().SetBool("reload", false);
-            Debug.Log("false reload");
             if (ammunitionCurrent + ammunitionTotal >= Ammo)
                 {
                 ammunitionTotal = ammunitionTotal - (Ammo - ammunitionCurrent);
@@ -194,7 +195,11 @@ if(ammunitionCurrent != Ammo)
             }
             else if (Hit.collider.tag == "Player")
             {
-                Instantiate(sandHit, Hit.point, Quaternion.LookRotation(Hit.normal));
+                //Instantiate(sandHit, Hit.point, Quaternion.LookRotation(Hit.normal));
+                //Reduce health of the player
+                Health health = Hit.collider.gameObject.GetComponent<Health>();
+                health.TakeDammage(damage);
+                Debug.Log("Hitted player");
             }
         }
         Destroy(Trail.gameObject, Trail.time);

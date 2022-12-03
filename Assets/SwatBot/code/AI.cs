@@ -83,7 +83,6 @@ public sealed class AI : AIBehavior
 		}
 		if (dist < fireRadius)
 		{
-			Debug.Log(mustShoot);
 			if (needToMove)
 			{
 				if (Time.time - needToMoveTime > 0.3f)
@@ -93,11 +92,12 @@ public sealed class AI : AIBehavior
 			}
             if (mustShoot)
             {
-				if(Time.time - lastLaserTime > 1.22f)
-                {
+				if(Time.time - lastLaserTime > 1.5f)
+				{
 					mustShoot = false;
+					laserLineRenderer.enabled = false;
 				}
-            }
+			}
 			gameObject.GetComponent<Animator>().SetBool("run", false);
 			if (Shoot.ammunitionCurrent != Shoot.Ammo)
 			{
@@ -165,7 +165,7 @@ public sealed class AI : AIBehavior
                             Ray raySeePlayerM4Laser = new Ray();
                             raySeePlayerM4Laser.origin = shotPoint.transform.position;
                             raySeePlayerM4Laser.direction = shotPoint.forward;
-                            Debug.DrawRay(raySeePlayerM4Laser.origin, raySeePlayerM4Laser.direction * 100f, Color.green);
+                            //Debug.DrawRay(raySeePlayerM4Laser.origin, raySeePlayerM4Laser.direction * 100f, Color.green);
                             RaycastHit hitLaser;
                             if (Physics.Raycast(raySeePlayerM4Laser, out hitLaser))
                             {
@@ -188,7 +188,7 @@ public sealed class AI : AIBehavior
 						Ray raySeePlayerM4 = new Ray();
 						raySeePlayerM4.origin = shotPoint.transform.position;
 						raySeePlayerM4.direction = shotPoint.forward;
-						Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+						//Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
 						RaycastHit hittt;
 						if (Physics.Raycast(raySeePlayerM4, out hittt))
 							{
@@ -200,26 +200,30 @@ public sealed class AI : AIBehavior
 								lastShootingTime = Time.time;
 								gameObject.GetComponent<Animator>().SetBool("Fire", false);
 								gameObject.GetComponent<Animator>().SetBool("idle", true);
+								laserLineRenderer.enabled = false;
 							}
 							else
 								{
 									isShooting = false;
 								}
 							}
-						}
+					}
 					
 				}
 				else if (mustShoot)
 				{
 					//elapsed += Time.deltaTime;
+					elapsed += Time.deltaTime;
 					if (elapsed >= shootingDelay)
 					{
 						elapsed = elapsed % shootingDelay;
 						Shoot.shot();
 						mustShoot = false;
+						isShooting = true;
 						lastShootingTime = Time.time;
 						gameObject.GetComponent<Animator>().SetBool("Fire", false);
 						gameObject.GetComponent<Animator>().SetBool("idle", true);
+						laserLineRenderer.enabled = false;
 					}
 				}
 				else
@@ -273,9 +277,11 @@ public sealed class AI : AIBehavior
 					elapsed = elapsed % shootingDelay;
 					Shoot.shot();
 					mustShoot = false;
+					isShooting = true;
 					lastShootingTime = Time.time;
 					gameObject.GetComponent<Animator>().SetBool("Fire", false);
 					gameObject.GetComponent<Animator>().SetBool("idle", true);
+					laserLineRenderer.enabled = false;
 				}
 			}
 		}
