@@ -14,6 +14,7 @@ public sealed class AI : AIBehavior
 	private int ammunitionCurrent;
 	private magazineBehaviorBot equippedMagazine;
 	public shoot Shoot;
+	public Rotate rotateCs;
 	float elapsed = 0f;
 	float elapsedFirstPart = 0f;
 	public float LastShootTimeFirstPart;
@@ -126,15 +127,16 @@ public sealed class AI : AIBehavior
 				directionCor1 = directionCorMust1;
 			}
 			Rotate(directionCor1);
+			rotateCs.SetDirection(directionCor);
 			//Debug.Log(Time.time - lastLaserTime);
-/*			if (mustShoot)
-			{
-				Debug.Log("true");
-			}
-            else
-            {
-				Debug.Log("false");
-			}*/
+			/*			if (mustShoot)
+						{
+							Debug.Log("true");
+						}
+						else
+						{
+							Debug.Log("false");
+						}*/
 			//laser
 
 			Ray raySeePlayer = new Ray();

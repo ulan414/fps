@@ -25,6 +25,10 @@ namespace InfimaGames.LowPolyShooterPack
         [SerializeField] 
         private int roundsPerMinutes = 200;
 
+        [Tooltip("Damage of the bullet")]
+        [SerializeField]
+        private int damage = 10;
+
         [Tooltip("Mask of things recognized when firing.")]
         [SerializeField]
         private LayerMask mask;
@@ -253,6 +257,12 @@ namespace InfimaGames.LowPolyShooterPack
             GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
             //Add velocity to the projectile.
             projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse;   
+            if(hit.collider.tag == "AI")
+            {
+                Health health = hit.collider.gameObject.GetComponent<Health>();
+                health.TakeDammage(damage);
+                Debug.Log("Hiittt Yee");
+            }
         }
 
         public override void FillAmmunition(int amount)
