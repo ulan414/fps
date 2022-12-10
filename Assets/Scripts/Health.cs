@@ -6,10 +6,11 @@ public class Health : MonoBehaviour
 {
     public int health;
     public int maxHealth;
+    public HealthBar changeHealth;
     // Start is called before the first frame update
     void Start()
     {
-        
+        changeHealth.SetMaxHealth(maxHealth);
     }
 
     // Update is called once per frame
@@ -24,6 +25,7 @@ public class Health : MonoBehaviour
         {
             Debug.Log("Dead");
         }
+        changeHealth.SetHealth(health);
     }
     public void AddHealth(int bonusHealth)
     {
@@ -32,5 +34,6 @@ public class Health : MonoBehaviour
         {
             health = maxHealth;
         }
+        changeHealth.SetHealth(health);
     }
 }

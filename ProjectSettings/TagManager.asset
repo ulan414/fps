@@ -9,6 +9,7 @@ TagManager:
   - ExplosiveBarrel
   - metal
   - sand
+  - Head
   layers:
   - Default
   - TransparentFX

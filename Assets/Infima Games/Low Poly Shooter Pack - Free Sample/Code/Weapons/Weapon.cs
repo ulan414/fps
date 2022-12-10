@@ -29,6 +29,11 @@ namespace InfimaGames.LowPolyShooterPack
         [SerializeField]
         private int damage = 10;
 
+
+        [Tooltip("Damage of the bullet to head")]
+        [SerializeField]
+        private int damageHead = 17;
+
         [Tooltip("Mask of things recognized when firing.")]
         [SerializeField]
         private LayerMask mask;
@@ -247,22 +252,29 @@ namespace InfimaGames.LowPolyShooterPack
             
             //Determine the rotation that we want to shoot our projectile in.
             Quaternion rotation = Quaternion.LookRotation(playerCamera.forward * 1000.0f - muzzleSocket.position);
-            
+
             //If there's something blocking, then we can aim directly at that thing, which will result in more accurate shooting.
             if (Physics.Raycast(new Ray(playerCamera.position, playerCamera.forward),
                 out RaycastHit hit, maximumDistance, mask))
+            {
                 rotation = Quaternion.LookRotation(hit.point - muzzleSocket.position);
-                
+                if (hit.collider.tag == "AI")
+                {
+                    Health health = hit.collider.gameObject.GetComponentInParent<Health>();
+                    health.TakeDammage(damage);
+                }else if (hit.collider.tag == "Head")
+                {
+                    Health health = hit.collider.gameObject.GetComponentInParent<Health>();
+                    health.TakeDammage(damageHead);
+                    Debug.Log("Hitted head");
+                }
+            }
+
             //Spawn projectile from the projectile spawn point.
             GameObject projectile = Instantiate(prefabProjectile, muzzleSocket.position, rotation);
             //Add velocity to the projectile.
             projectile.GetComponent<Rigidbody>().velocity = projectile.transform.forward * projectileImpulse;   
-            if(hit.collider.tag == "AI")
-            {
-                Health health = hit.collider.gameObject.GetComponent<Health>();
-                health.TakeDammage(damage);
-                Debug.Log("Hiittt Yee");
-            }
+
         }
 
         public override void FillAmmunition(int amount)

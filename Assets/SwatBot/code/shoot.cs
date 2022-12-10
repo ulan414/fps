@@ -31,7 +31,7 @@ public class shoot : MonoBehaviour
     [SerializeField]
     public int damage = 0;
     Vector3 playerPositionWhenShoot = new Vector3(0, 0, 0);
-
+    public bool sniper = false;
 
     [Tooltip("Magazine ammo")]
     [SerializeField]
@@ -174,7 +174,11 @@ if(ammunitionCurrent != Ammo)
         Vector3 startPosition = Trail.transform.position;
         while (time < 1)
         {
-            Trail.transform.position = Vector3.Lerp(startPosition, playerPositionWhenShoot, time);
+            if(sniper)
+                Trail.transform.position = Vector3.Lerp(startPosition, playerPositionWhenShoot, time);
+            else
+                Trail.transform.position = Vector3.Lerp(startPosition, Hit.point, time);
+
             /*            Trail.transform.position = transform.position + (shotPoint.transform.forward * 200); 
             */
             time += Time.deltaTime / Trail.time;
