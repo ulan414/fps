@@ -7,6 +7,7 @@ public class Health : MonoBehaviour
     public int health;
     public int maxHealth;
     public HealthBar changeHealth;
+    public bool isBot = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,14 +17,18 @@ public class Health : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
     public void TakeDammage(int damage)
     {
         health -= damage;
-        if(health <= 0)
+        if (health <= 0)
         {
-            Debug.Log("Dead");
+            if (isBot)
+            {
+                AI ai = gameObject.GetComponent<AI>();
+                ai.dying = true;   
+            }
         }
         changeHealth.SetHealth(health);
     }

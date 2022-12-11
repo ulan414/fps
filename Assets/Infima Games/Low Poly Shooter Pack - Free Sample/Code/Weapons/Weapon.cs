@@ -27,7 +27,7 @@ namespace InfimaGames.LowPolyShooterPack
 
         [Tooltip("Damage of the bullet")]
         [SerializeField]
-        private int damage = 10;
+        private int damagee = 10;
 
 
         [Tooltip("Damage of the bullet to head")]
@@ -261,12 +261,12 @@ namespace InfimaGames.LowPolyShooterPack
                 if (hit.collider.tag == "AI")
                 {
                     Health health = hit.collider.gameObject.GetComponentInParent<Health>();
-                    health.TakeDammage(damage);
-                }else if (hit.collider.tag == "Head")
+                    health.TakeDammage(damagee);
+                }
+                else if (hit.collider.tag == "Head")
                 {
                     Health health = hit.collider.gameObject.GetComponentInParent<Health>();
                     health.TakeDammage(damageHead);
-                    Debug.Log("Hitted head");
                 }
             }
 
