@@ -3702,7 +3702,7 @@ MonoBehaviour:
   laserLineRenderer: {fileID: 941158851}
   laserWidth: 0.01
   laserMaxLength: 5
-  diyng: 0
+  dying: 0
   dead: 0
   sniper: 0
 --- !u!195 &615433961
@@ -3758,6 +3758,7 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   changeHealth: {fileID: 346195134}
+  isBot: 1
 --- !u!4 &647432990 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4706939876495061202, guid: d2980d92b360cf24c84f2bafd0e876eb,
@@ -5363,7 +5364,7 @@ MonoBehaviour:
   laserLineRenderer: {fileID: 1882640248}
   laserWidth: 0.01
   laserMaxLength: 5
-  diyng: 0
+  dying: 0
   dead: 0
   sniper: 1
 --- !u!95 &1106651644
@@ -9213,7 +9214,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148870449795}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: -0.238, z: 0}
+  m_LocalPosition: {x: 6.997, y: -0.238, z: 0}
   m_LocalScale: {x: 1.1, y: 1.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9495,6 +9496,7 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   changeHealth: {fileID: 1311241844}
+  isBot: 1
 --- !u!1 &919132148870449795
 GameObject:
   m_ObjectHideFlags: 0
@@ -10210,7 +10212,6 @@ GameObject:
   - component: {fileID: 7033752627976176373}
   - component: {fileID: 124902064233901669}
   - component: {fileID: 7033752627976176374}
-  - component: {fileID: 7033752627976176375}
   m_Layer: 0
   m_Name: Soldier_body
   m_TagString: AI
@@ -16628,7 +16629,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1467203862487203127}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: -0, y: -0.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16646,24 +16647,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.28
-  m_Height: 1.5667776
+  m_Height: 1.72
   m_Direction: 1
   m_Center: {x: -0.000035440695, y: 0.78242284, z: -0.0026815347}
---- !u!114 &7033752627976176375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1467203862487203127}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cf23021cd3603442b593653298c7f73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 0
-  maxHealth: 0
-  changeHealth: {fileID: 0}
 --- !u!1 &7054642988269175213
 GameObject:
   m_ObjectHideFlags: 0
@@ -18101,6 +18087,7 @@ MonoBehaviour:
   health: 100
   maxHealth: 100
   changeHealth: {fileID: 438930975}
+  isBot: 0
 --- !u!1 &8221009425604461045
 GameObject:
   m_ObjectHideFlags: 0
@@ -18653,7 +18640,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.84
+  m_Radius: 0.12
   m_Height: 0.32418934
   m_Direction: 1
   m_Center: {x: -0.00000011920917, y: 1.6170154, z: -0.0021167994}
