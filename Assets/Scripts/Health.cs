@@ -8,6 +8,9 @@ public class Health : MonoBehaviour
     public int maxHealth;
     public HealthBar changeHealth;
     public bool isBot = true;
+    public Vector3 playerTeleportAfterDeathPosition = new Vector3(0f,0f,0f);
+    public GameOverScreen GameOverScreen;
+    //script myScript;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +30,15 @@ public class Health : MonoBehaviour
             if (isBot)
             {
                 AI ai = gameObject.GetComponent<AI>();
-                ai.dying = true;   
+                ai.dying = true;
+            }
+            else
+            {
+                //make smthng with player after death
+                GameOverScreen.Setup(10);
+                gameObject.GetComponent<Collider>().enabled = false;
+                //myScript = gameObject.GetComponent<Movement>();
+                gameObject.GetComponent<Movement>().enabled = !gameObject.GetComponent<Movement>().enabled;
             }
         }
         changeHealth.SetHealth(health);

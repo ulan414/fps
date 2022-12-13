@@ -151,7 +151,7 @@ public sealed class AI : AIBehavior
 			}
 			else
 			{
-				nav.enabled = false;
+				//nav.enabled = false;
 				gameObject.GetComponent<Animator>().SetBool("run_back", false);
 				gameObject.GetComponent<Animator>().SetBool("run", false);
 				gameObject.GetComponent<Animator>().SetBool("idle", false);
@@ -160,7 +160,7 @@ public sealed class AI : AIBehavior
 				//raySeePlayer.origin = transform.position + new Vector3(0.18f, 1.1f, 0);
 				raySeePlayer.origin = seePlayer.transform.position;
 				raySeePlayer.direction = directionCor;
-				//Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.blue);
+				Debug.DrawRay(raySeePlayer.origin, directionCor * fireRadius, Color.blue);
 				RaycastHit hit;
 					if (Physics.Raycast(raySeePlayer, out hit))
 					{
@@ -197,7 +197,7 @@ public sealed class AI : AIBehavior
 									Ray raySeePlayerM4Laser = new Ray();
 									raySeePlayerM4Laser.origin = shotPoint.transform.position;
 									raySeePlayerM4Laser.direction = shotPoint.forward;
-									//Debug.DrawRay(raySeePlayerM4Laser.origin, raySeePlayerM4Laser.direction * 100f, Color.green);
+									Debug.DrawRay(raySeePlayerM4Laser.origin, raySeePlayerM4Laser.direction * 100f, Color.green);
 									RaycastHit hitLaser;
 									if (Physics.Raycast(raySeePlayerM4Laser, out hitLaser))
 									{
@@ -281,6 +281,7 @@ public sealed class AI : AIBehavior
 							}
 							if (hasSeenPlayer && !mustShoot)
 							{
+								Debug.Log("move to");
 								nav.enabled = true;
 								nav.SetDestination(Player.transform.position);
 								gameObject.GetComponent<Animator>().SetBool("run_back", false);
