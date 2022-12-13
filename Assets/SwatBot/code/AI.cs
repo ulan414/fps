@@ -331,6 +331,7 @@ public sealed class AI : AIBehavior
 		}
 		else
 		{
+			Debug.Log("dying");
 			laserLineRenderer.enabled = false;
 			nav.enabled = false;
 			Debug.Log(playones);

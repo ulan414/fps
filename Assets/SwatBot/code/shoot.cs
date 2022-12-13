@@ -32,6 +32,7 @@ public class shoot : MonoBehaviour
     public int damage = 0;
     Vector3 playerPositionWhenShoot = new Vector3(0, 0, 0);
     public bool sniper = false;
+    public bool dontShoot = false;
 
     [Tooltip("Magazine ammo")]
     [SerializeField]
@@ -119,25 +120,29 @@ if(ammunitionCurrent != Ammo)
 /*            if (LastShootTime + shootDelay < Time.time)
             {*/
                 Vector3 direction = GetDirection();
-/*             Ray raySeePlayerM4 = new Ray();
-                raySeePlayerM4.origin = shotPoint.transform.position;
-                raySeePlayerM4.direction = shotPoint.forward;
-                //Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
-                RaycastHit hittt;*/
-/*                if (Physics.Raycast(raySeePlayerM4, out hittt))
-                {*/
-                   //if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
-                    //{
-                        if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue))
+            /*             Ray raySeePlayerM4 = new Ray();
+                            raySeePlayerM4.origin = shotPoint.transform.position;
+                            raySeePlayerM4.direction = shotPoint.forward;
+                            //Debug.DrawRay(raySeePlayerM4.origin, raySeePlayerM4.direction * 100f, Color.green);
+                            RaycastHit hittt;*/
+            /*                if (Physics.Raycast(raySeePlayerM4, out hittt))
+                            {*/
+            //if (hittt.collider.tag == "Player")//shoots only if m4 directed into player
+            //{
+            if (!dontShoot)
+            {
+                if (Physics.Raycast(shotPoint.position, direction, out RaycastHit hit, float.MaxValue))
                         {
                             //Bot.GetComponent<Animator>().SetBool("Fire", true);
                             shootingSystem.Play();
                             TrailRenderer trail = Instantiate(BulletTrail, shotPoint.position, Quaternion.identity);
                             trail.material.color = new Color(255, 215, 0);
-                            StartCoroutine(SpawnTrail(trail, hit));
-                            LastShootTime = Time.time;
-                            ammunitionCurrent--;
-                        }
+
+                    StartCoroutine(SpawnTrail(trail, hit));
+                    LastShootTime = Time.time;
+                    ammunitionCurrent--;
+                }
+            }
                     //}
                 //}
                 //
@@ -202,6 +207,7 @@ if(ammunitionCurrent != Ammo)
                 //Instantiate(sandHit, Hit.point, Quaternion.LookRotation(Hit.normal));
                 //Reduce health of the player
                 Health health = Hit.collider.gameObject.GetComponent<Health>();
+                Debug.Log(dontShoot);
                 health.TakeDammage(damage);
                 Debug.Log("Hitted player");
             }
